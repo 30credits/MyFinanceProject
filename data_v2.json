@@ -1,7 +1,7 @@
 {
     "balance": {
-        "Cash": 400,
-        "Bank": 0
+        "Cash": 300,
+        "Bank": 20000
     },
     "history": [
         {
@@ -15,6 +15,18 @@
             "account": "Cash",
             "change": -100,
             "note": "snake"
+        },
+        {
+            "date": "2026-05-14 15:16:09",
+            "account": "Cash",
+            "change": -100,
+            "note": "dinner"
+        },
+        {
+            "date": "2026-05-14 15:16:48",
+            "account": "Bank",
+            "change": 20000,
+            "note": "salary"
         }
     ]
 }
