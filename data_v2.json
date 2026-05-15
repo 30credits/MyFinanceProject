@@ -1,32 +1,32 @@
 {
     "balance": {
-        "Cash": 300,
-        "Bank": 20000
+        "Cash": 5100,
+        "Bank": 45000
     },
     "history": [
         {
-            "date": "2026-05-13 15:07:21",
-            "account": "Cash",
-            "change": 500,
-            "note": "dinner"
-        },
-        {
-            "date": "2026-05-13 15:07:56",
-            "account": "Cash",
-            "change": -100,
-            "note": "snake"
-        },
-        {
-            "date": "2026-05-14 15:16:09",
-            "account": "Cash",
-            "change": -100,
-            "note": "dinner"
-        },
-        {
-            "date": "2026-05-14 15:16:48",
+            "date": "2026-05-15 16:25:04",
             "account": "Bank",
-            "change": 20000,
-            "note": "salary"
+            "change": 50000,
+            "note": "\u85aa\u6c34"
+        },
+        {
+            "date": "2026-05-15 16:25:12",
+            "account": "Cash",
+            "change": 100,
+            "note": "\u64bf\u5230\u7684"
+        },
+        {
+            "date": "2026-05-15 16:25:22",
+            "account": "Cash",
+            "change": 5000,
+            "note": "\u9818\u51fa"
+        },
+        {
+            "date": "2026-05-15 16:25:32",
+            "account": "Bank",
+            "change": -5000,
+            "note": "\u9818\u51fa"
         }
     ]
 }

@@ -1,0 +1,20 @@
+{
+    "balance": {
+        "Cash": 1000,
+        "Bank": 50000
+    },
+    "history": [
+        {
+            "date": "2026-05-15 15:29:07",
+            "account": "Cash",
+            "change": 1000,
+            "note": "\u64bf\u5230\u7684"
+        },
+        {
+            "date": "2026-05-15 15:29:19",
+            "account": "Bank",
+            "change": 50000,
+            "note": "\u85aa\u6c34"
+        }
+    ]
+}
