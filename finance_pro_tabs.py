@@ -1,33 +1,43 @@
-import os
-import sys
 import tkinter as tk
 from tkinter import ttk, messagebox
 import json
 from datetime import datetime
+import os
+import sys
 
-# --- 【就加在這裡！】 ---
-print(f"目前程式的工作目錄是: {os.getcwd()}")
-# -----------------------
+# --- 【核心升級：萬用絕對路徑導航】 ---
+if getattr(sys, 'frozen', False):
+    BASE_DIR = os.path.dirname(sys.executable)
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-FILE_NAME = "data_v2.json"
+FILE_NAME = os.path.join(BASE_DIR, "data_v2.json")
 
-# --- 1. 資料處理 ---
+# 可以在終端機印出來給自己看，確認檔案被鎖在哪裡
+print(f"【系統提示】資料庫已鎖定在：{FILE_NAME}")
+
+
+# --- 1. 資料處理 (Data Layer) ---
 def load_data():
     try:
-        with open("data_v2.json", "r") as file:
+        with open(FILE_NAME, "r", encoding="utf-8") as file:
             return json.load(file)
     except FileNotFoundError:
-        return {"balance": {"Cash": 0, "Bank": 0}, "history": []}
+        # 如果檔案不存在，直接在程式旁邊建一個乾淨的
+        initial_data = {"balance": {"Cash": 0, "Bank": 0}, "history": []}
+        with open(FILE_NAME, "w", encoding="utf-8") as file:
+            json.dump(initial_data, file, indent=4)
+        return initial_data
 
 def save_data(data):
-    with open("data_v2.json", "w") as file:
-        json.dump(data, file, indent=4)
+    with open(FILE_NAME, "w", encoding="utf-8") as file:
+        json.dump(data, file, indent=4, ensure_ascii=False)
 
+
+# --- 2. 動作邏輯 (Business Logic) ---
 data = load_data()
 
-# --- 2. 邏輯函數 ---
 def handle_submit():
-    # 這裡要抓的是 tab1 裡面的輸入框
     amount_str = entry_amount.get()
     note_str = entry_note.get()
     acc_name = acc_var.get()
@@ -44,7 +54,6 @@ def handle_submit():
         
         messagebox.showinfo("成功", f"已記錄 {acc_name}: ${amount}")
         
-        # 清空輸入框
         entry_amount.delete(0, tk.END)
         entry_note.delete(0, tk.END)
         
@@ -53,15 +62,16 @@ def handle_submit():
 
 def refresh_history():
     global data
-    data = load_data() # 重新從檔案抓取最新資料
+    data = load_data() 
     history_text.delete("1.0", tk.END)
-    for log in reversed(data["history"][-15:]): # 顯示最近 15 筆
+    for log in reversed(data["history"][-15:]): 
         line = f"{log['date']} | {log['account']} | {log['change']} | {log['note']}\n"
         history_text.insert(tk.END, line)
 
-# --- 3. UI 介面 ---
+
+# --- 3. UI 介面 (UI Layer) ---
 root = tk.Tk()
-root.title("Will's Finance Pro v2")
+root.title("Will's Finance Pro v2.1 (Stable)")
 root.geometry("500x550")
 
 notebook = ttk.Notebook(root)
@@ -89,23 +99,52 @@ tk.Label(tab1, text="備註:").grid(row=3, column=0, sticky="e", padx=10, pady=1
 entry_note = tk.Entry(tab1)
 entry_note.grid(row=3, column=1, sticky="w")
 
-# 【關鍵】執行按鈕放在 tab1
 btn_submit = tk.Button(tab1, text="確認送出", command=handle_submit, bg="#2ecc71", fg="white", width=20)
 btn_submit.grid(row=4, column=0, columnspan=2, pady=30)
 
-# --- 分頁二內容 ---
-tk.Label(tab2, text="歷史明細", font=("Arial", 14, "bold")).pack(pady=10)
-history_text = tk.Text(tab2, height=15, width=55)
-history_text.pack(padx=20, pady=10)
+# --- 分頁二內容 (Treeview 升級版) ---
+tk.Label(tab2, text="歷史明細 (表格版)", font=("Arial", 14, "bold")).pack(pady=10)
 
+# 1. 定義欄位名稱
+columns = ("date", "account", "change", "note")
+tree = ttk.Treeview(tab2, columns=columns, show="headings", height=15)
+
+# 2. 設定每一欄的標題文字與寬度
+tree.heading("date", text="交易時間")
+tree.column("date", width=150, anchor="center")
+
+tree.heading("account", text="帳戶")
+tree.column("account", width=80, anchor="center")
+
+tree.heading("change", text="金額變動")
+tree.column("change", width=100, anchor="right") # 金額通常靠右對齊 (Right-aligned)
+
+tree.heading("note", text="備註說明")
+tree.column("note", width=150, anchor="w")      # 文字備註靠左對齊 (West)
+
+tree.pack(padx=20, pady=10, fill="both", expand=True)
+
+
+# 3. 重新寫一個專屬於 Treeview 的刷新函數，替換掉舊的
+def refresh_history():
+    global data
+    data = load_data()
+    
+    # 清空 Treeview 舊資料
+    for item in tree.get_children():
+        tree.delete(item)
+        
+    # 將資料逐筆插入表格
+    for log in reversed(data["history"][-20:]): # 顯示最近 20 筆
+        # 根據金額正負，決定給它加上正號
+        change_str = f"+${log['change']}" if log['change'] > 0 else f"${log['change']}"
+        
+        # 塞入表格
+        tree.insert("", tk.END, values=(log['date'], log['account'], change_str, log['note']))
+
+# 刷新按鈕依舊保留
 btn_refresh = tk.Button(tab2, text="刷新紀錄", command=refresh_history)
 btn_refresh.pack(pady=5)
 
-# 當切換到分頁二時自動刷新 (選配)
-def on_tab_change(event):
-    if notebook.index("current") == 1: # 如果選中的是索引為 1 的分頁 (即第二頁)
-        refresh_history()
-
-notebook.bind("<<NotebookTabChanged>>", on_tab_change)
 
 root.mainloop()

@@ -1,6 +1,6 @@
 {
     "balance": {
-        "Cash": 5100,
+        "Cash": 6100,
         "Bank": 45000
     },
     "history": [
@@ -8,25 +8,31 @@
             "date": "2026-05-15 16:25:04",
             "account": "Bank",
             "change": 50000,
-            "note": "\u85aa\u6c34"
+            "note": "薪水"
         },
         {
             "date": "2026-05-15 16:25:12",
             "account": "Cash",
             "change": 100,
-            "note": "\u64bf\u5230\u7684"
+            "note": "撿到的"
         },
         {
             "date": "2026-05-15 16:25:22",
             "account": "Cash",
             "change": 5000,
-            "note": "\u9818\u51fa"
+            "note": "領出"
         },
         {
             "date": "2026-05-15 16:25:32",
             "account": "Bank",
             "change": -5000,
-            "note": "\u9818\u51fa"
+            "note": "領出"
+        },
+        {
+            "date": "2026-05-18 16:42:47",
+            "account": "Cash",
+            "change": 1000,
+            "note": "撿到"
         }
     ]
 }
