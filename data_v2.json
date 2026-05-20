@@ -1,7 +1,7 @@
 {
     "balance": {
-        "Cash": 8600,
-        "Bank": 42000
+        "Cash": 3600,
+        "Bank": 96000
     },
     "history": [
         {
@@ -63,6 +63,36 @@
             "account": "Cash",
             "change": -500,
             "note": "-500"
+        },
+        {
+            "date": "2026-05-20 15:19:17",
+            "account": "Transfer",
+            "change": 5000,
+            "note": "Bank->Cash"
+        },
+        {
+            "date": "2026-05-20 16:47:36",
+            "account": "Transfer",
+            "change": 1000,
+            "note": "[提款] "
+        },
+        {
+            "date": "2026-05-20 16:47:56",
+            "account": "Transfer",
+            "change": -10000,
+            "note": "[存款] 錢太多"
+        },
+        {
+            "date": "2026-05-20 16:48:21",
+            "account": "Cash",
+            "change": -1000,
+            "note": "買晚餐"
+        },
+        {
+            "date": "2026-05-20 16:48:33",
+            "account": "Bank",
+            "change": 50000,
+            "note": "薪水又進來"
         }
     ]
 }
