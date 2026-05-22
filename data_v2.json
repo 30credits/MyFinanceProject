@@ -1,7 +1,11 @@
 {
     "balance": {
-        "Cash": 4600,
-        "Bank": 95400
+        "現金 Cash": -14800,
+        "銀行 Bank": 60000,
+        "悠遊卡": 1250,
+        "電子支付": 500,
+        "餐廳零用金": 10000,
+        "外匯美金券": 3000
     },
     "history": [
         {
@@ -111,6 +115,30 @@
             "account": "Bank",
             "change": -500,
             "note": ""
+        },
+        {
+            "date": "2026-05-22 15:01:41",
+            "account": "Transfer",
+            "change": 1000,
+            "note": "[現金 Cash ➔ 悠遊卡] 1",
+            "from": "現金 Cash",
+            "to": "悠遊卡"
+        },
+        {
+            "date": "2026-05-22 15:02:16",
+            "account": "Transfer",
+            "change": 10000,
+            "note": "[現金 Cash ➔ 銀行 Bank] 1",
+            "from": "現金 Cash",
+            "to": "銀行 Bank"
+        },
+        {
+            "date": "2026-05-22 15:06:05",
+            "account": "Transfer",
+            "change": 5000,
+            "note": "[現金 Cash ➔ 銀行 Bank] 0.0",
+            "from": "現金 Cash",
+            "to": "銀行 Bank"
         }
     ]
 }
