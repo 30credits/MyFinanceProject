@@ -231,9 +231,8 @@ def draw_asset_pie_chart():
     start_y = 225
     # 1. 動態角度接力迴圈
     for i, (acc_name, value) in enumerate(data["balance"].items()):
-        if value <= 0: continue # 零或負數不畫扇形
         
-        percent = value / total_val
+        percent = value / total_val if total_val > 0 and value > 0 else 0
         angle = percent * 360
         color = colors[i % len(colors)]
         
