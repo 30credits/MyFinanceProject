@@ -100,6 +100,39 @@ def add_stock_event():
     threading.Thread(target=async_crawl_task, args=(code,), daemon=True).start()
     entry_code.delete(0, tk.END)
 
+# ─── 🎮 【UI 互動邏輯控制中心（再升級）】 ───
+
+def show_right_click_menu(event):
+    """當使用者在表格上按右鍵時，自動選取該列並彈出選單"""
+    # 1. 偵測滑鼠點擊位置，自動辨識是哪一列 (row)
+    selected_row = tree.identify_row(event.y)
+    
+    if selected_row:
+        # 2. 強迫表格將聚光燈 (Selection) 切換到滑鼠點擊的那一列上
+        tree.selection_set(selected_row)
+        
+        # 3. 在滑鼠點擊的精準座標 (event.x_root, event.y_root) 彈出右鍵選單！
+        right_click_menu.post(event.x_root, event.y_root)
+
+def delete_selected_stock():
+    """真正動手把選中的股票從畫面上抹除"""
+    # 抓出目前被滑鼠選中的那一列 ID
+    selected_item = tree.focus()
+    
+    if selected_item:
+        # 拿到這檔股票的數據，用來顯示提示訊息
+        row_data = tree.item(selected_item)["values"]
+        stock_code = row_data[0]
+        stock_name = row_data[1]
+        
+        # 彈出視窗詢問確認，防止手殘點錯
+        confirm = messagebox.askyesno("確認刪除", f"確定要停止監控 [{stock_name} ({stock_code})] 嗎？")
+        
+        if confirm:
+            # 💥 一槍斃命！從畫面上刪除這一列
+            tree.delete(selected_item)
+            print(f"🗑️ 已成功將 {stock_name} 自監控清單移除。")
+
 def async_crawl_task(code):
     # 迎回大擴充的 5 個數據項
     stock_name, price, change, volume, status = fetch_stock_price(code)
@@ -179,5 +212,17 @@ tree.tag_configure("even", foreground=TEXT_LIGHT)
 # 啟動第一次載入
 threading.Thread(target=async_crawl_task, args=("2330",), daemon=True).start()
 root.after(5000, auto_refresh_loop)
+
+# ─── 🖱️ 【全新解鎖：右鍵彈出選單設定】 ───
+
+# 1. 建立一個浮動的選單大盒子 (tearoff=0 代表不要讓選單可以被單獨撕下來懸空)
+right_click_menu = tk.Menu(root, tearoff=0, bg=CARD_DARK, fg=TEXT_LIGHT, activebackground=ACCENT_BLUE, activeforeground=BG_DARK, bd=0)
+
+# 2. 在盒子裡塞入一個叫「❌ 刪除監控」的按鈕，點擊後去執行上方我們寫好的 delete_selected_stock 函數
+right_click_menu.add_command(label="❌ 刪除此股票監控", command=delete_selected_stock)
+
+# 3. 🎯 【世紀大綁定】 ── 告訴表格聽從右鍵指揮！
+# <Button-3> 代表滑鼠右鍵。當在 tree 表格上按右鍵，立刻呼叫 show_right_click_menu 函數
+tree.bind("<Button-3>", show_right_click_menu)
 
 root.mainloop()
