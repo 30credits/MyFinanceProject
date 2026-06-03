@@ -98,7 +98,7 @@ class MultiComparatorApp:
         
         while True:
             # 💡 順著你偵破的 B= 黃金網頁通道一路翻頁
-            url = f"https://www.moneydj.com/funddj/ya/yFundSearch.djhtm?SearchKey={keyword}&B={page}&C=0&D=&ff=1"
+            url = f"https://www.moneydj.com/funddj/ya/yFundSearch.djhtm?a={keyword}&B={page}&C=0&D=&ff=1"
             headers = {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
             }

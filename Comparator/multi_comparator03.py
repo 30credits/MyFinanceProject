@@ -16,6 +16,17 @@ plt.rcParams['axes.unicode_minus'] = False
 BG_DARK = "#1e1e2e"
 TEXT_LIGHT = "#cdd6f4"
 
+def clean_fund_name(raw_name):
+    """✂️ 基金名稱精準瘦身手術：拔除所有冗長的警語與括號"""
+    clean_name = raw_name
+    if "-" in clean_name:
+        clean_name = clean_name.split("-")[0]
+    if "(" in clean_name:
+        clean_name = clean_name.split("(")[0]
+    if "（" in clean_name:
+        clean_name = clean_name.split("（")[0]
+    return clean_name.strip()
+
 class MultiComparatorApp:
     def __init__(self, root):
         self.root = root
@@ -85,21 +96,77 @@ class MultiComparatorApp:
                                command=self.launch_battle, bg="#a6e3a1", fg="black", height=2)
         btn_launch.pack(fill="x", padx=15, pady=12)
 
-    def search_fund_api(self, keyword):
-        url = f"https://www.moneydj.com/funddj/djjson/YFundSearchJSON.djjson?q={keyword}"
-        headers = {"User-Agent": "Mozilla/5.0"}
+    def search_fund_api_all_pages(self, keyword):
+        """🚀 終極翻頁引擎（精準關鍵字過濾版）：強制限定名字必須包含關鍵字，踢除所有境外路人！"""
         fund_dict = {}
-        try:
-            res = requests.get(url, headers=headers, verify=False)
-            if res.status_code == 200 and res.text.strip():
-                items = res.text.strip().split(",")
-                for item in items:
-                    if not item: continue
-                    parts = item.split("|")
-                    if len(parts) >= 2:
-                        fund_dict[parts[1].strip()] = parts[0].strip()
-        except Exception as e:
-            print(f"API 連線失敗: {e}")
+        page = 1
+        
+        print(f"🕵️‍♂️ 正在發動全網【跨頁穿梭補網】，關鍵字: [{keyword}]")
+        
+        while True:
+            # 💡 順著你偵破的 B= 黃金網頁通道一路翻頁
+            url = f"https://www.moneydj.com/funddj/ya/yFundSearch.djhtm?a={keyword}&B={page}&C=0&D=&ff=1"
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            }
+            
+            try:
+                res = requests.get(url, headers=headers, verify=False)
+                if res.status_code == 200 and res.text.strip():
+                    html_text = res.text
+                    
+                    current_page_found = 0
+                    search_ptr = 0
+                    
+                    while True:
+                        code_start_idx = html_text.find('?a=', search_ptr)
+                        if code_start_idx == -1:
+                            break
+                            
+                        code_end_idx = html_text.find('"', code_start_idx)
+                        fund_code = html_text[code_start_idx+3 : code_end_idx].strip()
+                        
+                        name_start_idx = html_text.find('>', code_end_idx) + 1
+                        name_end_idx = html_text.find('</a>', name_start_idx)
+                        raw_fund_name = html_text[name_start_idx : name_end_idx].strip()
+                        
+                        search_ptr = name_end_idx
+                        
+                        # ─── 🛡️ 鋼鐵過濾網（本次致命修正點） ───
+                        # 1. 代碼必須是純英數字 (排除網頁上的中文字選單按鈕)
+                        is_legal_code = fund_code and fund_code.isalnum()
+                        
+                        # 2. 核心修正：除了不是空字串，【名字裡必須百分之百包含你輸入的關鍵字】(例如：安聯)！
+                        # 這樣一來，那些沒帶關鍵字的其他境外基金(DWS、CPR)就會被一微秒內直接擊碎剔除！
+                        is_legal_name = raw_fund_name and (keyword in raw_fund_name) and "全部" not in raw_fund_name
+                        
+                        if is_legal_code and is_legal_name and fund_code not in fund_dict.values():
+                            # 💡 執行名稱瘦身手術
+                            clean_name = clean_fund_name(raw_fund_name)
+                            
+                            # 防止瘦身後名稱撞衫
+                            if clean_name in fund_dict and fund_dict[clean_name] != fund_code:
+                                clean_name = f"{clean_name}({fund_code})"
+                                
+                            fund_dict[clean_name] = fund_code
+                            current_page_found += 1
+                    
+                    # 如果這一頁篩選完，沒有任何一檔符合你關鍵字的真基金，代表後面也沒有了，直接收工
+                    if current_page_found == 0:
+                        break
+                        
+                    print(f"   ➔ ✅ 成功攻破第 {page} 頁，捕獲 {current_page_found} 檔真正 [{keyword}] 基金...")
+                    page += 1
+                    
+                    import time
+                    time.sleep(0.05)
+                else:
+                    break
+            except Exception as e:
+                print(f"跨頁搜尋在第 {page} 頁發生阻礙: {e}")
+                break
+                
+        print(f"🎉 跨頁大總結！共計幫您跨時空掘出 {len(fund_dict)} 檔乾淨的「{keyword}」系列基金！")
         return fund_dict
 
     def process_input(self):
@@ -118,7 +185,7 @@ class MultiComparatorApp:
             self.entry_search.delete(0, tk.END)
         else:
             print(f"🕵️‍♂️ 偵測到中文字串，啟動基金搜尋密道...")
-            funds = self.search_fund_api(user_input)
+            funds = self.search_fund_api_all_pages(user_input)
             if not funds:
                 messagebox.showerror("殘念", f"找不到任何跟『{user_input}』相關的基金。")
                 return
