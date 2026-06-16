@@ -274,12 +274,28 @@ class MultiComparatorApp:
         s_dt = datetime.strptime(start_date, "%Y-%m-%d")
         e_dt = datetime.strptime(end_date, "%Y-%m-%d")
         url = f"https://www.moneydj.com/funddj/bcd/tBCDNavList.djbcd?a={fund_code}&B={s_dt.year}-{s_dt.month}-{s_dt.day}&C={e_dt.year}-{e_dt.month}-{e_dt.day}&D="
-        headers = {"User-Agent": "Mozilla/5.0"}
+        
+        # 🛡️ 商業級防擋瀏覽器偽裝
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+            "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7",
+            "Referer": "https://www.moneydj.com/funddj/yp/yp011001.djhtm",
+            "Connection": "keep-alive"
+        }
+        
         fund_data = {}
         try:
-            res = requests.get(url, headers=headers, verify=False)
+            # 加上 timeout 防止被網站卡死，並強制使用 UTF-8 解碼
+            res = requests.get(url, headers=headers, verify=False, timeout=10)
+            res.encoding = 'utf-8'
+            
             if res.status_code == 200:
                 raw_data = res.text.strip()
+                if not raw_data or "NavList" in raw_data and len(raw_data) < 50:
+                    print(f"⚠️ 網站返回空資料，可能代碼錯誤或遭阻擋")
+                    return {}
+                    
                 all_elements = raw_data.split(",")
                 cleaned = []
                 for item in all_elements:
@@ -287,13 +303,23 @@ class MultiComparatorApp:
                     if len(item) > 8 and not item.isdigit():
                         cleaned.append(item[:8])
                         cleaned.append(item[8:])
-                    else: cleaned.append(item)
+                    else: 
+                        cleaned.append(item)
+                        
                 half = len(cleaned) // 2
                 dates = cleaned[:half]
                 values = cleaned[half:]
+                
                 for d, v in zip(dates, values):
-                    if d and v: fund_data[f"{d[0:4]}-{d[4:6]}-{d[6:8]}"] = float(v)
-        except: pass
+                    if d and v: 
+                        # 格式化日期為 YYYY-MM-DD
+                        date_str = f"{d[0:4]}-{d[4:6]}-{d[6:8]}"
+                        try:
+                            fund_data[date_str] = float(v)
+                        except ValueError:
+                            continue
+        except Exception as e:
+            print(f"❌ 基金數據下載失敗: {e}")
         return fund_data
 
     def get_stock_history(self, stock_id, start_date, end_date):

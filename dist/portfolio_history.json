@@ -1,0 +1,20 @@
+[
+    {
+        "type": "stock",
+        "code": "2330",
+        "name": "股票: 台積電",
+        "money": 1000000.0
+    },
+    {
+        "type": "stock",
+        "code": "00988A",
+        "name": "股票: UPAMC Global Innovation Active ETF",
+        "money": 1000000.0
+    },
+    {
+        "type": "fund",
+        "code": "ACYT09",
+        "name": "基金: 元大高科技基金",
+        "money": 1000000.0
+    }
+]

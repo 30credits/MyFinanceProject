@@ -1,20 +1,26 @@
 [
     {
-        "type": "fund",
-        "code": "ACNC18",
-        "name": "基金: 第一金亞洲科技基金",
+        "type": "stock",
+        "code": "2330",
+        "name": "股票: 台積電",
+        "money": 1000000.0
+    },
+    {
+        "type": "stock",
+        "code": "00988A",
+        "name": "股票: UPAMC Global Innovation Active ETF",
         "money": 1000000.0
     },
     {
         "type": "fund",
-        "code": "ACTR37",
-        "name": "基金: 國泰臺韓科技基金",
-        "money": 500000.0
+        "code": "ACDD04",
+        "name": "基金: 安聯台灣科技基金",
+        "money": 1000000.0
     },
     {
-        "type": "stock",
-        "code": "2330",
-        "name": "股票: 台積電",
+        "type": "fund",
+        "code": "ACPS10",
+        "name": "基金: 統一奔騰基金",
         "money": 1000000.0
     }
 ]
