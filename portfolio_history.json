@@ -7,20 +7,8 @@
     },
     {
         "type": "stock",
-        "code": "00988A",
-        "name": "股票: UPAMC Global Innovation Active ETF",
-        "money": 1000000.0
-    },
-    {
-        "type": "fund",
-        "code": "ACDD04",
-        "name": "基金: 安聯台灣科技基金",
-        "money": 1000000.0
-    },
-    {
-        "type": "fund",
-        "code": "ACPS10",
-        "name": "基金: 統一奔騰基金",
+        "code": "2880",
+        "name": "股票: Hua Nan Financial Holdings Co., Ltd.",
         "money": 1000000.0
     }
 ]
